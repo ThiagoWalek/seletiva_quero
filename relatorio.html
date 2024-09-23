@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Ofertas</title>
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+    <header>
+        <h1>Relatório de Ofertas</h1>
+    </header>
+    <main id="offers-container">
+        <p>Carregando ofertas...</p>
+    </main>
+    <script>
+        async function loadOffers() {
+            try {
+                const response = await fetch('/ofertas');
+                if (!response.ok) throw new Error('Erro ao carregar ofertas.');
+                
+                const data = await response.json();
+                const container = document.getElementById('offers-container');
+                container.innerHTML = '';
+
+                if (data.offers.length === 0) {
+                    container.innerHTML = '<p>Nenhuma oferta encontrada.</p>';
+                } else {
+                    data.offers.forEach(offer => {
+                        const offerElement = document.createElement('div');
+                        offerElement.className = 'offer';
+                        offerElement.innerHTML = `
+                            <h2>${offer.courseName}</h2>
+                            <p>Instituição: ${offer.iesName}</p>
+                            <p>Preço Original: ${offer.fullPrice}</p>
+                            <p>Preço Ofertado: ${offer.offeredPrice}</p>
+                            <p>Avaliação: ${offer.rating}</p>
+                        `;
+                        container.appendChild(offerElement);
+                    });
+                }
+            } catch (error) {
+                console.error('Erro ao carregar ofertas:', error);
+                document.getElementById('offers-container').innerHTML = '<p>Erro ao carregar ofertas.</p>';
+            }
+        }
+
+        window.onload = loadOffers;
+    </script>
+</body>
+</html>
